@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
+import { getConfig } from '@config';
+import { calculateFutureDate } from '@helpers/time';
 import { defineConfig, devices } from '@playwright/test';
-
 import * as dotenv from 'dotenv';
 import fs from 'fs';
 
@@ -13,6 +14,8 @@ const missingEnvironmentVariables = Object.keys(
 if (missingEnvironmentVariables.length > 0) {
     throw new Error(`${missingEnvironmentVariables.join(', ')} not configured`);
 }
+
+const { url: baseURL } = getConfig();
 
 export default defineConfig({
     testDir: './tests',
@@ -28,12 +31,24 @@ export default defineConfig({
     reporter: [['dot'], ['html', { open: 'never' }]],
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
-        /* Base URL to use in actions like `await page.goto('/')`. */
-        // baseURL: 'http://127.0.0.1:3000',
-
-        /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+        baseURL,
         trace: 'retain-on-failure',
-        actionTimeout: 5000
+        actionTimeout: 5000,
+        storageState: {
+            cookies: [
+                {
+                    name: 'isVisitorAgreementAccepted',
+                    value: '1',
+                    domain: baseURL.split('//')[1],
+                    path: '/',
+                    expires: calculateFutureDate(1),
+                    httpOnly: false,
+                    secure: false,
+                    sameSite: 'Lax'
+                }
+            ],
+            origins: []
+        }
     },
 
     /* Configure projects for major browsers */

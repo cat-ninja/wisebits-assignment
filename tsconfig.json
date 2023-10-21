@@ -6,6 +6,11 @@
         "moduleResolution": "node",
         "baseUrl": ".",
         "paths": {
+            "@fixtures/*": ["fixtures/*"],
+            "@components/*": ["components/*"],
+            "@helpers/*": ["helpers/*"],
+            "@pages/*": ["pages/*"],
+            "@config": ["config/config"],
             "@app": ["app/Application"]
         },
         "allowSyntheticDefaultImports": true,
