@@ -1,15 +1,19 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
+import * as dotenv from 'dotenv';
+import fs from 'fs';
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
+dotenv.config();
+
+const missingEnvironmentVariables = Object.keys(
+    dotenv.parse(fs.readFileSync('.env.example'))
+).filter((exampleKey) => !process.env[exampleKey]);
+
+if (missingEnvironmentVariables.length > 0) {
+    throw new Error(`${missingEnvironmentVariables.join(', ')} not configured`);
+}
+
 export default defineConfig({
     testDir: './tests',
     /* Run tests in files in parallel */
