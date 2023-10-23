@@ -27,7 +27,9 @@ test('Simple smoke test', async ({ app }) => {
     });
 
     await test.step('Make sure the video is playing', async () => {
-        expect(await player.isCurrentlyPlaying()).toBeTruthy();
+        await expect
+            .poll(async () => await player.isCurrentlyPlaying())
+            .toBeTruthy();
     });
 
     await test.step('Check the video is muted by default', async () => {
