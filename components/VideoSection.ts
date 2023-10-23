@@ -1,5 +1,5 @@
 import AbstractComponent from '@components/AbstractComponent';
-import VideoList from '@components/VideosList';
+import VideoList from '@components/VideoList';
 import { type Locator } from '@playwright/test';
 
 export default class VideoSection extends AbstractComponent {
