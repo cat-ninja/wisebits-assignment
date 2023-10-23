@@ -4,6 +4,7 @@ import { calculateFutureDate } from '@helpers/time';
 import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import fs from 'fs';
+import os from 'os';
 
 dotenv.config();
 
@@ -17,19 +18,38 @@ if (missingEnvironmentVariables.length > 0) {
 
 const { url: baseURL } = getConfig();
 
+const projects = [
+    {
+        name: 'chrome',
+        use: {
+            ...devices['Desktop Chrome'],
+            launchOptions: {
+                // Use Chrome due to the missing h264 video codecs in Chromium.
+                channel: 'chrome'
+            }
+        }
+    },
+    {
+        name: 'firefox',
+        use: { ...devices['Desktop Firefox'] }
+    }
+];
+
+// Video codecs for webkit are bundled into the MacOS so the playback might be broken on other platforms.
+if (os.platform() === 'darwin') {
+    projects.push({
+        name: 'webkit',
+        use: { ...devices['Desktop Safari'] }
+    });
+}
+
 export default defineConfig({
     testDir: './tests',
-    /* Run tests in files in parallel */
     fullyParallel: true,
-    /* Fail the build on CI if you accidentally left test.only in the source code. */
     forbidOnly: !!process.env.CI,
-    /* Retry on CI only */
     retries: process.env.CI ? 2 : 0,
-    /* Opt out of parallel tests on CI. */
     workers: process.env.CI ? 1 : undefined,
-    /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: [['dot'], ['html', { open: 'never' }]],
-    /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
         baseURL,
         trace: 'retain-on-failure',
@@ -50,49 +70,5 @@ export default defineConfig({
             origins: []
         }
     },
-
-    /* Configure projects for major browsers */
-    projects: [
-        {
-            name: 'chromium',
-            use: { ...devices['Desktop Chrome'] }
-        },
-
-        {
-            name: 'firefox',
-            use: { ...devices['Desktop Firefox'] }
-        },
-
-        {
-            name: 'webkit',
-            use: { ...devices['Desktop Safari'] }
-        }
-
-        /* Test against mobile viewports. */
-        // {
-        //   name: 'Mobile Chrome',
-        //   use: { ...devices['Pixel 5'] },
-        // },
-        // {
-        //   name: 'Mobile Safari',
-        //   use: { ...devices['iPhone 12'] },
-        // },
-
-        /* Test against branded browsers. */
-        // {
-        //   name: 'Microsoft Edge',
-        //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-        // },
-        // {
-        //   name: 'Google Chrome',
-        //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-        // },
-    ]
-
-    /* Run your local dev server before starting the tests */
-    // webServer: {
-    //   command: 'npm run start',
-    //   url: 'http://127.0.0.1:3000',
-    //   reuseExistingServer: !process.env.CI,
-    // },
+    projects
 });
