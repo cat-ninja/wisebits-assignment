@@ -1,19 +1,9 @@
 import AbstractComponent from '@components/AbstractComponent';
 import VideoThumbnail from '@components/VideoThumbnail';
-import { expect, type Locator } from '@playwright/test';
+import { expect } from '@playwright/test';
 
 export default class VideoList extends AbstractComponent {
-    readonly wrap: Locator;
-
-    private readonly items: Locator;
-
-    constructor(wrap: Locator) {
-        super(wrap);
-
-        this.wrap = wrap;
-
-        this.items = this.wrap.locator('[data-el-video]');
-    }
+    private readonly items = this.wrap.locator('[data-el-video]');
 
     private async waitForVideos(): Promise<number> {
         let count = 0;
@@ -27,9 +17,8 @@ export default class VideoList extends AbstractComponent {
     }
 
     async getVideos(): Promise<VideoThumbnail[]> {
-        await this.waitForVideos();
         return Array.from(
-            { length: await this.items.count() },
+            { length: await this.waitForVideos() },
             (_, i) => new VideoThumbnail(this.items.nth(i))
         );
     }

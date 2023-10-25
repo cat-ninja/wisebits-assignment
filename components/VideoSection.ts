@@ -3,16 +3,12 @@ import VideoList from '@components/VideoList';
 import { type Locator } from '@playwright/test';
 
 export default class VideoSection extends AbstractComponent {
-    readonly wrap: Locator;
-
     readonly heading: Locator;
 
     readonly videos: VideoList;
 
     constructor(wrap: Locator, name: string) {
         super(wrap);
-
-        this.wrap = wrap;
 
         this.heading = this.wrap.locator('.title-row', {
             hasText: name

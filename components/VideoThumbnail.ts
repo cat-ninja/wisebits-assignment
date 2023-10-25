@@ -1,34 +1,15 @@
 import AbstractComponent from '@components/AbstractComponent';
-import { type Locator } from '@playwright/test';
 
 export default class VideoThumbnail extends AbstractComponent {
-    readonly wrap: Locator;
+    readonly image = this.wrap.getByRole('img');
 
-    readonly image: Locator;
+    readonly bage = this.wrap.locator('.thumb__video-badge');
 
-    readonly buttons: Locator;
+    readonly buttons = this.wrap.locator('.btn');
 
-    readonly bage: Locator;
+    readonly title = this.wrap.locator('.thumb__title-video');
 
-    readonly title: Locator;
-
-    readonly studio: Locator;
-
-    constructor(wrap: Locator) {
-        super(wrap);
-
-        this.wrap = wrap;
-
-        this.image = wrap.getByRole('img');
-
-        this.bage = wrap.locator('.thumb__video-badge');
-
-        this.buttons = wrap.locator('.btn');
-
-        this.title = wrap.locator('.thumb__title-video');
-
-        this.studio = wrap.locator('.thumb__title-info__studio');
-    }
+    readonly studio = this.wrap.locator('.thumb__title-info__studio');
 
     async open(): Promise<void> {
         await this.wrap.click();

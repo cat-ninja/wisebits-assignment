@@ -1,28 +1,13 @@
 import AbstractComponent from '@components/AbstractComponent';
-import { type Locator } from '@playwright/test';
 
 export default class VideoPlayer extends AbstractComponent {
-    readonly wrap: Locator;
+    readonly video = this.wrap
+        .locator('[data-el="VideoPurchaseSimple"]')
+        .locator('video');
 
-    readonly video: Locator;
+    readonly purchaseMenu = this.wrap.locator('.video-purchase__menu');
 
-    readonly purchaseMenu: Locator;
-
-    readonly volumeToggle: Locator;
-
-    constructor(wrap: Locator) {
-        super(wrap);
-
-        this.wrap = wrap;
-
-        this.purchaseMenu = this.wrap.locator('.video-purchase__menu');
-
-        this.video = this.wrap
-            .locator('[data-el="VideoPurchaseSimple"]')
-            .locator('video');
-
-        this.volumeToggle = this.wrap.locator('.video-purchase__volume-toggle');
-    }
+    readonly volumeToggle = this.wrap.locator('.video-purchase__volume-toggle');
 
     async isCurrentlyPlaying(): Promise<boolean> {
         const isPlaying = await this.video.evaluate(
@@ -30,5 +15,9 @@ export default class VideoPlayer extends AbstractComponent {
             (v) => !v.paused && v.currentTime > 0
         );
         return isPlaying;
+    }
+
+    async getCurrentFrame(): Promise<Buffer> {
+        return await this.video.screenshot();
     }
 }
